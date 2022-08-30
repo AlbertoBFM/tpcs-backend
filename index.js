@@ -25,6 +25,7 @@ app.use( express.json() );
 app.use( '/api/auth', require('./routes/auth') );
 app.use( '/api/category', require('./routes/category') );
 app.use( '/api/provider', require('./routes/provider') );
+app.use( '/api/product', require('./routes/product') );
 
 // Listen requests
 app.listen( process.env.PORT, () => {
