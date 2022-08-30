@@ -23,8 +23,7 @@ app.use( express.json() );
 
 // Routes
 app.use( '/api/auth', require('./routes/auth') );
-
-// TODO: CRUD: Categories
+app.use( '/api/category', require('./routes/category') );
 
 // Listen requests
 app.listen( process.env.PORT, () => {
