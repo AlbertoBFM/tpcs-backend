@@ -4,7 +4,8 @@ const Sale = require('../models/Sale');
 
 const getSales = async ( req, res = response ) => {
 
-    const sales = await Sale.find();
+    const sales = await Sale.find()
+                                .populate( 'user', 'name' );
 
     return res.status( 200 ).json({
         ok: true,

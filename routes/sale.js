@@ -4,10 +4,9 @@
 */
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getSales, createSale, deleteSale } = require('../controllers/sale');
-// const { numberRange } = require('../helpers/validateInput');
 const { fieldValidators } = require('../middlewares/fieldValidator');
 const { validateJWT } = require('../middlewares/validateJWT');
+const { getSales, createSale, deleteSale } = require('../controllers/sale');
 
 const router = Router();
 
