@@ -1,2 +1,5 @@
-# tpcs-backend
-Backend del proyecto para el Taller TPCS
+# Backend MERN - TPCS
+
+```
+alberto.brandon2@gmail.com
+```
