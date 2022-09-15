@@ -19,7 +19,7 @@ const createCategory = async ( req, res = response ) => {
 
     try {
 
-        const category = await Category.findOne({ name: name.toUpperCase() });
+        const category = await Category.findOne({ name: name.toUpperCase().trim() });
 
         if ( category )
             return res.status( 400 ).json({
@@ -64,7 +64,7 @@ const updateCategory = async ( req, res = response ) => {
                 msg: 'El Id de categoría no existe'
             });
 
-        const categoryByName = await Category.findOne({ name: name.toUpperCase(), _id: { $ne: categoryId } }); //* Busca si existe una categoría con el mismo nombre, exceptuando la categoría que se actualizará 
+        const categoryByName = await Category.findOne({ name: name.toUpperCase().trim(), _id: { $ne: categoryId } }); //* Busca si existe una categoría con el mismo nombre, exceptuando la categoría que se actualizará 
         
         if ( categoryByName )
             return res.status( 400 ).json({
