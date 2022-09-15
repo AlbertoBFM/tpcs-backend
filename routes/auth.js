@@ -13,6 +13,7 @@ const router = Router();
 router.post( 
     '/new',
     [   // Middlewares
+        validateJWT,
         check('name', 'El nombre es obligatorio').not().isEmpty(),
         check('email', 'El email es obligatorio').isEmail(),
         check('password', 'El password deber ser de 6 caracteres').isLength({ min: 6 }),
