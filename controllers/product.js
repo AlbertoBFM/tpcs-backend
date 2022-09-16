@@ -22,7 +22,7 @@ const createProduct = async ( req, res = response ) => {
 
     try {
 
-        const productByName = await Product.findOne({ name: name.toUpperCase() });
+        const productByName = await Product.findOne({ name: name.toUpperCase().trim() });
 
         if ( productByName )
             return res.status( 400 ).json({
@@ -52,7 +52,7 @@ const createProduct = async ( req, res = response ) => {
                 msg: 'El Id del proveedor no existe'
             });
         
-        req.body.name = name.toUpperCase(); 
+        req.body.name = name.toUpperCase().trim(); 
         const newProduct = new Product( req.body );
         
         const savedProduct = await newProduct.save();
@@ -89,7 +89,7 @@ const updateProduct = async ( req, res = response ) => {
                 msg: 'El Id de producto no existe'
             });
 
-        const productByName = await Product.findOne({ name: name.toUpperCase(), _id: { $ne: productId } }); //* Busca si existe un producto con el mismo nombre, exceptuando el producto que se actualizará 
+        const productByName = await Product.findOne({ name: name.toUpperCase().trim(), _id: { $ne: productId } }); //* Busca si existe un producto con el mismo nombre, exceptuando el producto que se actualizará 
         
         if ( productByName )
             return res.status( 400 ).json({
@@ -120,7 +120,7 @@ const updateProduct = async ( req, res = response ) => {
             });
 
             
-        req.body.name = name.toUpperCase(); 
+        req.body.name = name.toUpperCase().trim(); 
         const updatedProduct = await Product.findByIdAndUpdate( productId, req.body, { new: true } ); //* "new: true" es para que devuelva el producto actualizada
 
         return res.status( 200 ).json({

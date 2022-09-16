@@ -35,7 +35,7 @@ const createProvider = async ( req, res = response ) => {
                 msg: 'Un proveedor existe con ese Celular'
             });
         
-        req.body.name = req.body.name.toUpperCase(); 
+        req.body.name = req.body.name.toUpperCase().trim(); 
         const newProvider = new Provider( req.body );
         
         const savedProvider = await newProvider.save();
@@ -89,7 +89,7 @@ const updateProvider = async ( req, res = response ) => {
             });
 
             
-        req.body.name = req.body.name.toUpperCase(); 
+        req.body.name = req.body.name.toUpperCase().trim(); 
         const updatedProvider = await Provider.findByIdAndUpdate( providerId, req.body, { new: true } ); //* "new: true" es para que devuelva el proveedor actualizada
 
         return res.status( 200 ).json({

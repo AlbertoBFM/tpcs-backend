@@ -27,7 +27,7 @@ const createCategory = async ( req, res = response ) => {
                 msg: 'Una categoría existe con ese nombre'
             });
         
-        req.body.name = req.body.name.toUpperCase(); 
+        req.body.name = req.body.name.toUpperCase().trim(); 
         const newCategory = new Category( req.body );
         
         const savedCategory = await newCategory.save();
@@ -73,7 +73,7 @@ const updateCategory = async ( req, res = response ) => {
             });
 
             
-        req.body.name = req.body.name.toUpperCase(); 
+        req.body.name = req.body.name.toUpperCase().trim(); 
         const updatedCategory = await Category.findByIdAndUpdate( categoryId, req.body, { new: true } ); //* "new: true" es para que devuelva la categoría actualizada
 
         return res.status( 200 ).json({

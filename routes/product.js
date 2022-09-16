@@ -21,9 +21,9 @@ router.post(
     '/',
     [
         check('name', 'El nombre del producto es obligatorio').not().isEmpty(),
-        check('stock', 'El stock del producto es invalido').custom( value => numberRange( value, 1, 1000 ) ),
-        check('purchasePrice', 'El precio de compra del producto es invalido').custom( value => numberRange( value, 1, 19999 ) ),
-        check('salePrice', 'El precio de venta del producto es invalido').custom( value => numberRange( value, 1, 19999 ) ),
+        check('stock', 'El stock del producto es invalido').custom( value => numberRange( Number(value), 1, 1000 ) ),
+        check('purchasePrice', 'El precio de compra del producto es invalido').custom( value => numberRange( Number(value), 1, 19999 ) ),
+        check('salePrice', 'El precio de venta del producto es invalido').custom( value => numberRange( Number(value), 1, 19999 ) ),
         check('category', 'La categoría del producto es obligatoria').not().isEmpty(),
         check('provider', 'El proveedor del producto es obligatorio').not().isEmpty(),
         fieldValidators
