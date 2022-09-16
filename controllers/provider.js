@@ -19,7 +19,7 @@ const createProvider = async ( req, res = response ) => {
 
     try {
 
-        const providerByName = await Provider.findOne({ name: name.toUpperCase() });
+        const providerByName = await Provider.findOne({ name: name.toUpperCase().trim() });
 
         if ( providerByName )
             return res.status( 400 ).json({
@@ -27,7 +27,7 @@ const createProvider = async ( req, res = response ) => {
                 msg: 'Un proveedor existe con ese nombre'
             });
 
-        const providerByPhone = await Provider.findOne({ phone });
+        const providerByPhone = await Provider.findOne({ phone: phone.trim() });
 
         if ( providerByPhone )
             return res.status( 400 ).json({
@@ -42,7 +42,7 @@ const createProvider = async ( req, res = response ) => {
 
         return res.status( 201 ).json({
             ok: true,
-            savedProvider
+            provider: savedProvider
         });
 
     } catch (error) {
@@ -72,7 +72,7 @@ const updateProvider = async ( req, res = response ) => {
                 msg: 'El Id de provider no existe'
             });
 
-        const providerByName = await Provider.findOne({ name: name.toUpperCase(), _id: { $ne: providerId } }); //* Busca si existe un proveedor con el mismo nombre, exceptuando la provider que se actualizará 
+        const providerByName = await Provider.findOne({ name: name.toUpperCase().trim(), _id: { $ne: providerId } }); //* Busca si existe un proveedor con el mismo nombre, exceptuando la provider que se actualizará 
         
         if ( providerByName )
             return res.status( 400 ).json({
@@ -80,7 +80,7 @@ const updateProvider = async ( req, res = response ) => {
                 msg: 'Un proveedor existe con ese nombre'
             });
 
-        const providerByPhone = await Provider.findOne({ phone, _id: { $ne: providerId } }); //* Busca si existe un proveedor con el mismo nombre, exceptuando la proveedor que se actualizará 
+        const providerByPhone = await Provider.findOne({ phone: phone.trim(), _id: { $ne: providerId } }); //* Busca si existe un proveedor con el mismo nombre, exceptuando la proveedor que se actualizará 
     
         if ( providerByPhone )
             return res.status( 400 ).json({
