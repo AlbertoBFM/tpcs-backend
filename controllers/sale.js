@@ -25,7 +25,7 @@ const createSale = async ( req, res = response ) => {
 
         return res.status( 201 ).json({
             ok: true,
-            savedSale
+            sale: savedSale
         });
 
     } catch (error) {

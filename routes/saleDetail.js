@@ -6,7 +6,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const { fieldValidators } = require('../middlewares/fieldValidator');
 const { validateJWT } = require('../middlewares/validateJWT');
-const { getSalesDetails, createSaleDetail, deleteSaleDetail } = require('../controllers/saleDetail');
+const { getSalesDetails, createSaleDetail, deleteSaleDetail, getDetailBySaleId } = require('../controllers/saleDetail');
 
 const router = Router();
 
@@ -14,6 +14,8 @@ router.use( validateJWT );
 
 // Get Sales
 router.get( '/', getSalesDetails );
+
+router.get( '/:id', getDetailBySaleId );
 
 // Create Sale
 router.post( 
