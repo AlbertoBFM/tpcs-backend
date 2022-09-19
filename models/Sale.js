@@ -7,11 +7,9 @@ const SaleSchema = Schema({
         ref: 'User',
         required: true
     },
-    // client: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Client',
-    //     required: true
-    // },
+    client: {
+        type: Number
+    },
     date: {
         type: Date,
         required: true
