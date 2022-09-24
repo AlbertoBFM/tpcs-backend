@@ -1,6 +1,7 @@
 const { response } = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const Sale = require('../models/Sale');
 
 const getUsers = async ( req, res = response ) => {
 
@@ -15,13 +16,21 @@ const getUsers = async ( req, res = response ) => {
 
 const createUser = async ( req, res = response ) => {
 
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
     try {
 
-        const user = await User.findOne({ email });
+        const userByName = await User.findOne({ name });
         
-        if ( user )
+        if ( userByName )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'Un usuario existe con ese Nombre'
+            });
+
+        const userByEmail = await User.findOne({ email });
+        
+        if ( userByEmail )
             return res.status( 400 ).json({
                 ok: false,
                 msg: 'Un usuario existe con ese email'
@@ -66,6 +75,14 @@ const deleteUser = async ( req, res = response ) => {
             return res.status( 400 ).json({
                 ok: false,
                 msg: 'El Id de Usuario no existe'
+            });
+
+        const saleByUser = await Sale.findOne({ user: user._id });
+
+        if ( saleByUser )
+            return res.status( 400 ).json({
+                ok: true,
+                msg: `El usuario "${ user.name }" tiene ventas registradas`
             });
 
         const deletedUser = await User.findByIdAndDelete( userId );
