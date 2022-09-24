@@ -30,7 +30,7 @@ const createProduct = async ( req, res = response ) => {
                 msg: 'Un producto existe con ese nombre'
             });
 
-        if ( purchasePrice >= salePrice )
+        if ( Number(purchasePrice) >= Number(salePrice) )
             return res.status( 400 ).json({
                 ok: false,
                 msg: 'El precio de compra no puede ser mayor o igual al precio de venta'

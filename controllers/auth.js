@@ -3,56 +3,10 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { generarJWT } = require('../helpers/jwt');
 
-const createUser = async ( req, res = response ) => {
-
-    const { email, password } = req.body;
-
-    try {
-
-        const user = await User.findOne({ email });
-        
-        if ( user )
-            return res.status( 400 ).json({
-                ok: false,
-                msg: 'Un usuario existe con ese email'
-            });
-
-        const newUser = new User( req.body );
-
-        // Encriptar contraseña
-        const salt = bcrypt.genSaltSync();
-        newUser.password = bcrypt.hashSync( password, salt );
-
-        await newUser.save();
-
-        // Generar JWT
-        // const token = await generarJWT( newUser.id, newUser.name, newUser.email );
-        
-        return res.status( 201 ).json({
-            ok: true,
-            user: { 
-                    _id: newUser.id,
-                    name: newUser.name,
-                    email: newUser.email,
-                }
-        });
-
-    } catch (error) {
-        // console.log(error);
-        return res.status( 500 ).json({
-            ok: false,
-            msg: 'Por favor hable con el Administrador'
-        });
-        
-    }
-
-}
-
 const loginUser = async ( req, res = response ) => {
 
     const { email, password } = req.body;
 
-    
     try {
         
         const user = await User.findOne({ email });
@@ -110,7 +64,6 @@ const revalidateToken = async ( req, res = response ) => {
 }
 
 module.exports = {
-    createUser,
     loginUser,
     revalidateToken
 };
