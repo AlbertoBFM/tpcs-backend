@@ -10,13 +10,12 @@ const loginUser = async ( req, res = response ) => {
     try {
         
         const user = await User.findOne({ email });
-        
+
         if ( !user )
             return res.status( 400 ).json({
                 ok: false,
                 msg: 'El usuario no existe con ese email'
             });
-
         // Confirmar los passwords
         const validPassword = bcrypt.compareSync( password, user.password );
         
@@ -27,13 +26,14 @@ const loginUser = async ( req, res = response ) => {
             });
 
         // Generar JWT
-        const token = await generarJWT( user.id, user.name, user.email );
+        const token = await generarJWT( user.id, user.name, user.email, user.userType );
 
         res.status( 202 ).json({
             ok: true,
             uid: user.id,
             name: user.name,
             email: user.email,
+            userType: user.userType,
             token
         });
 
@@ -48,16 +48,17 @@ const loginUser = async ( req, res = response ) => {
 
 const revalidateToken = async ( req, res = response ) => {
 
-    const { uid, name, email } = req;
+    const { uid, name, email, userType } = req;
     // console.log(req);
     
-    const token = await generarJWT( uid, name, email );
+    const token = await generarJWT( uid, name, email, userType );
 
     res.json({
         ok: true,
         uid,
         name,
         email,
+        userType,
         token
     });
 

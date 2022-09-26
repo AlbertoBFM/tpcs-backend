@@ -4,14 +4,12 @@ const User = require('../models/User');
 const Sale = require('../models/Sale');
 
 const getUsers = async ( req, res = response ) => {
-
     const users = await User.find();
 
     return res.status( 200 ).json({
         ok: true,
         users
     });
-
 }
 
 const createUser = async ( req, res = response ) => {
