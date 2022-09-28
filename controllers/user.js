@@ -66,9 +66,7 @@ const deleteUser = async ( req, res = response ) => {
     const userId = req.params.id;
 
     try {
-        
         const user = await User.findById( userId ); //* buscar si usuario existe
-        
         if ( !user )
             return res.status( 400 ).json({
                 ok: false,
@@ -76,7 +74,6 @@ const deleteUser = async ( req, res = response ) => {
             });
 
         const saleByUser = await Sale.findOne({ user: user._id });
-
         if ( saleByUser )
             return res.status( 400 ).json({
                 ok: true,
@@ -84,12 +81,10 @@ const deleteUser = async ( req, res = response ) => {
             });
 
         const deletedUser = await User.findByIdAndDelete( userId );
-
         return res.status( 200 ).json({
             ok: true,
             deletedUser
         });
-
     } catch (error) {
         console.log( error );
         return res.status( 500 ).json({

@@ -2,6 +2,7 @@ const { response } = require('express');
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Provider = require('../models/Provider');
+const SaleDetail = require('../models/SaleDetail');
 
 const getProducts = async ( req, res = response ) => {
 
@@ -141,34 +142,33 @@ const updateProduct = async ( req, res = response ) => {
 }
 
 const deleteProduct = async ( req, res = response ) => {
-
     const productId = req.params.id;
-
     try {
-        
         const productById = await Product.findById( productId ); //* buscar si producto existe
-        
         if ( !productById )
             return res.status( 400 ).json({
                 ok: false,
                 msg: 'El Id de producto no existe'
             });
 
-        const deletedProduct = await Product.findByIdAndDelete( productId );
+        const saleDetailByProduct = await SaleDetail.findOne({ product: productById._id });
+        if ( saleDetailByProduct )
+            return res.status( 400 ).json({
+                ok: true,
+                msg: `El producto "${ productById.name }" esta registrado en otras ventas`
+            });
 
+        const deletedProduct = await Product.findByIdAndDelete( productId );
         return res.status( 200 ).json({
             ok: true,
             deletedProduct
         });
-
     } catch (error) {
-        
         console.log( error );
         return res.status( 500 ).json({
             ok: false,
             msg: 'Hable con el Administrador'
         });
-
     }
 
 }
