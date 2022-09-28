@@ -1,6 +1,6 @@
 const { response } = require('express');
+const Product = require('../models/Product');
 const Sale = require('../models/Sale');
-
 
 const getSales = async ( req, res = response ) => {
 
@@ -12,6 +12,42 @@ const getSales = async ( req, res = response ) => {
         sales
     });
 
+}
+
+const validateProductStock = async (req, res = response) => {
+    try {
+        const { _id, quantity } = req.body;
+
+        if ( quantity < 1 )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'La cantidad a vender debe ser mayor a 1'
+            });
+
+        const product = await Product.findById( _id ); //* buscar si producto existe
+        if ( !product )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'El Id de producto no existe'
+            });
+
+        if ( Number(product.stock) < Number(quantity) ) //* Si el stock del producto es menor a lo que se quiere vender
+            return res.status( 400 ).json({
+                ok: false,
+                msg: `Stock insuficiente de "${ product.name }"`
+            });
+
+        return res.status( 200 ).json({
+            ok: true,
+            msg: 'El producto puede ser vendido'
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador'
+        });
+    }
 }
 
 const createSale = async ( req, res = response ) => {
@@ -75,6 +111,7 @@ const deleteSale = async ( req, res = response ) => {
 
 module.exports = {
     getSales,
+    validateProductStock,
     createSale,
     deleteSale
 }

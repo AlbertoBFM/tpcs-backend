@@ -51,6 +51,12 @@ const createSaleDetail = async ( req, res = response ) => {
                 ok: false,
                 msg: 'El Id de producto no existe'
             });
+
+        if ( Number(productById.stock) < Number(quantity) ) //* Si el stock del producto es menor a lo que se quiere vender
+            return res.status( 400 ).json({
+                ok: false,
+                msg: `Stock insuficiente de "${ product.name }"`
+            });
         
         const newSaleDetail = new SaleDetail( req.body );
         
