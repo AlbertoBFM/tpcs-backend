@@ -1,16 +1,37 @@
 const { response } = require('express');
 const Category = require('../models/Category');
 
+const getAllCategories = async ( req, res = response ) => {
+    try {
+        const categories = await Category.find().select('name');
+        return res.status( 200 ).json({
+            ok: true,
+            categories
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador'
+        });
+    }
+}
 
 const getCategories = async ( req, res = response ) => {
-
-    const categories = await Category.find();
-
-    return res.status( 200 ).json({
-        ok: true,
-        categories
-    });
-
+    try {
+        const { limit = 5, page = 1 } = req.query; 
+        const categories = await Category.paginate({}, { limit, page });
+        return res.status( 200 ).json({
+            ok: true,
+            categories
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador'
+        });
+    }
 }
 
 const createCategory = async ( req, res = response ) => {
@@ -127,6 +148,7 @@ const deleteCategory = async ( req, res = response ) => {
 }
 
 module.exports = {
+    getAllCategories,
     getCategories,
     createCategory,
     updateCategory,

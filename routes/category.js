@@ -4,7 +4,7 @@
 */
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getCategories, createCategory, updateCategory, deleteCategory } = require('../controllers/category');
+const { getCategories, createCategory, updateCategory, deleteCategory, getAllCategories } = require('../controllers/category');
 const { fieldValidators } = require('../middlewares/fieldValidator');
 const { validateJWT } = require('../middlewares/validateJWT');
 
@@ -14,6 +14,9 @@ router.use( validateJWT );
 
 // Get Categories
 router.get( '/', getCategories );
+
+// Get All Categories
+router.get( '/all', getAllCategories );
 
 // Create Category
 router.post( 
