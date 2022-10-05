@@ -19,7 +19,7 @@ const getAllCategories = async ( req, res = response ) => {
 
 const getCategories = async ( req, res = response ) => {
     try {
-        const { limit = 5, page = 1, name = "" } = req.query; 
+        const { limit = 5, page = 1, name = '' } = req.query; 
         const searchedName = name.toUpperCase().trim();
         const categories = await Category.paginate({ name: { $regex: '.*' + searchedName + '.*' } }, { limit, page });
         return res.status( 200 ).json({

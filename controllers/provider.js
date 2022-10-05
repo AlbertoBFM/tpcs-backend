@@ -1,16 +1,48 @@
 const { response } = require('express');
 const Provider = require('../models/Provider');
 
+const getAllProviders = async ( req, res = response ) => {
+    try {
+        const providers = await Provider.find().select('name');
+        return res.status( 200 ).json({
+            ok: true,
+            providers
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador'
+        });
+    }
+}
 
 const getProviders = async ( req, res = response ) => {
+    try {
+        const { limit = 5, page = 1, name = '', phone = '' } = req.query; 
+        const searchedName = name.toUpperCase().trim();
+        const searchedPhone = phone.trim();
+        console.log({searchedPhone});
 
-    const providers = await Provider.find();
-
-    return res.status( 200 ).json({
-        ok: true,
-        providers
-    });
-
+        const providers = await Provider.paginate(
+            { 
+                name: { $regex: '.*' + searchedName + '.*' },
+                phone: { $regex: '.*' + searchedPhone + '.*' },
+            }, 
+            { limit, page }
+        );
+        
+        return res.status( 200 ).json({
+            ok: true,
+            providers
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador'
+        });
+    }
 }
 
 const createProvider = async ( req, res = response ) => {
@@ -143,6 +175,7 @@ const deleteProvider = async ( req, res = response ) => {
 }
 
 module.exports = {
+    getAllProviders,
     getProviders,
     createProvider,
     updateProvider,

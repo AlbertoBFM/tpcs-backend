@@ -4,7 +4,7 @@
 */
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getProviders, createProvider, updateProvider, deleteProvider } = require('../controllers/provider');
+const { getProviders, createProvider, updateProvider, deleteProvider, getAllProviders } = require('../controllers/provider');
 const { fieldValidators } = require('../middlewares/fieldValidator');
 const { validateJWT } = require('../middlewares/validateJWT');
 
@@ -14,6 +14,9 @@ router.use( validateJWT );
 
 // Get Providers
 router.get( '/', getProviders );
+
+// Get All Providers
+router.get( '/all', getAllProviders );
 
 // Create Provider
 router.post( 
