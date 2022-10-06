@@ -21,8 +21,7 @@ const getProviders = async ( req, res = response ) => {
     try {
         const { limit = 5, page = 1, name = '', phone = '' } = req.query; 
         const searchedName = name.toUpperCase().trim();
-        const searchedPhone = phone.trim();
-        console.log({searchedPhone});
+        const searchedPhone = phone.trim().replace('+', '\\+');
 
         const providers = await Provider.paginate(
             { 
