@@ -4,7 +4,7 @@
 */
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getProducts, createProduct, updateProduct, deleteProduct } = require('../controllers/product');
+const { getProducts, createProduct, updateProduct, deleteProduct, getAllProducts } = require('../controllers/product');
 const { numberRange } = require('../helpers/validateInput');
 const { fieldValidators } = require('../middlewares/fieldValidator');
 const { validateJWT } = require('../middlewares/validateJWT');
@@ -15,6 +15,9 @@ router.use( validateJWT );
 
 // Get Products
 router.get( '/', getProducts );
+
+// Get All Products
+router.get( '/all', getAllProducts );
 
 // Create Product
 router.post( 

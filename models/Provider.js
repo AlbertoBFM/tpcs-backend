@@ -2,7 +2,6 @@ const { Schema, model } = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
 
 const ProviderSchema = Schema({
-
     name: {
         type: String,
         required: true
@@ -18,7 +17,6 @@ const ProviderSchema = Schema({
         type: String,
         required: true
     }
-
 });
 
 ProviderSchema.plugin(mongoosePaginate);

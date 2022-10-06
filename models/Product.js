@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const ProductSchema = Schema({
-
     name: {
         type: String,
         required: true
@@ -31,8 +31,9 @@ const ProductSchema = Schema({
         ref: 'Provider',
         required: true
     }
-
 });
+
+ProductSchema.plugin(mongoosePaginate);
 
 ProductSchema.method('toJSON', function () {
     const { __v, ...object } = this.toObject();

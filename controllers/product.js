@@ -4,17 +4,69 @@ const Category = require('../models/Category');
 const Provider = require('../models/Provider');
 const SaleDetail = require('../models/SaleDetail');
 
+const getAllProducts = async ( req, res = response ) => {
+    try {
+        const products = await Product.find().select('name')
+                                        .populate( 'category', 'name' )
+                                        .populate( 'provider', 'name' );
+        return res.status( 200 ).json({
+            ok: true,
+            products
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador'
+        });
+    }
+}
+
 const getProducts = async ( req, res = response ) => {
+    try {
+        const { limit = 5, page = 1, name = '', category = '', provider = '' } = req.query; 
+        const searchedName = name.toUpperCase().trim();
+        const searchedCategory = category.toUpperCase().trim();
+        const searchedProvider = provider.toUpperCase().trim();
+        const { _id: categoryId } = await Category.findOne({ name: searchedCategory }) || {}; 
+        const { _id: providerId } = await Provider.findOne({ name: searchedProvider }) || {}; 
 
-    const products = await Product.find()
-                                    .populate( 'category', 'name' )
-                                    .populate( 'provider', 'name' );
+        if ( (category !== '' && categoryId === undefined) || (provider !== '' && providerId === undefined) ){ //* Si nos manda categoría o provider con nombres equivocados, directamente mandaremos un arreglo vacio
+            return res.status( 200 ).json({
+                ok: true,
+                products: { docs: [], totalDocs: 0, limit: 5, totalPages: 1, page: 1, pagingCounter: 1, hasPrevPage: false, hasNextPage: false, prevPage: null, nextPage: null }
+            });
+        }
+        const query = {
+            name: { $regex: '.*' + searchedName + '.*' },
+            category: { _id: categoryId },
+            provider: { _id: providerId }
+        };
+        if ( query.category._id === undefined ) delete query.category;
+        if ( query.provider._id === undefined ) delete query.provider;
 
-    return res.status( 200 ).json({
-        ok: true,
-        products
-    });
-
+        const products = await Product.paginate(
+            query,
+            { 
+                limit, 
+                page,
+                populate: [
+                    { path: 'category', select: 'name' },
+                    { path: 'provider', select: 'name' },
+                ],
+            }
+        )
+        return res.status( 200 ).json({
+            ok: true,
+            products
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador'
+        });
+    }
 }
 
 const createProduct = async ( req, res = response ) => {
@@ -174,6 +226,7 @@ const deleteProduct = async ( req, res = response ) => {
 }
 
 module.exports = {
+    getAllProducts,
     getProducts,
     createProduct,
     updateProduct,
