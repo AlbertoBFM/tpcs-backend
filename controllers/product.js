@@ -28,22 +28,46 @@ const getProducts = async ( req, res = response ) => {
         const searchedName = name.toUpperCase().trim();
         const searchedCategory = category.toUpperCase().trim();
         const searchedProvider = provider.toUpperCase().trim();
-        const { _id: categoryId } = await Category.findOne({ name: searchedCategory }) || {}; 
-        const { _id: providerId } = await Provider.findOne({ name: searchedProvider }) || {}; 
 
-        if ( (category !== '' && categoryId === undefined) || (provider !== '' && providerId === undefined) ){ //* Si nos manda categoría o provider con nombres equivocados, directamente mandaremos un arreglo vacio
-            return res.status( 200 ).json({
-                ok: true,
-                products: { docs: [], totalDocs: 0, limit: 5, totalPages: 1, page: 1, pagingCounter: 1, hasPrevPage: false, hasNextPage: false, prevPage: null, nextPage: null }
-            });
+        let query = { name: { $regex: '.*' + searchedName + '.*' } }
+        let categoryByName = {}, providerByName = {};
+        if ( searchedCategory !== '' ) {
+            categoryByName = await Category.findOne({ name: searchedCategory }) || {}; 
+            if ( categoryByName._id === undefined ){
+                return res.status( 200 ).json({
+                    ok: true,
+                    products: { docs: [], totalDocs: 0, limit: 5, totalPages: 1, page: 1, pagingCounter: 1, hasPrevPage: false, hasNextPage: false, prevPage: null, nextPage: null }
+                });
+            }
+            query.category = { _id: categoryByName._id };
         }
-        const query = {
-            name: { $regex: '.*' + searchedName + '.*' },
-            category: { _id: categoryId },
-            provider: { _id: providerId }
-        };
-        if ( query.category._id === undefined ) delete query.category;
-        if ( query.provider._id === undefined ) delete query.provider;
+        if ( searchedProvider !== '' ) {
+            providerByName = await Provider.findOne({ name: searchedProvider }) || {};   
+            if ( providerByName._id === undefined ){
+                return res.status( 200 ).json({
+                    ok: true,
+                    products: { docs: [], totalDocs: 0, limit: 5, totalPages: 1, page: 1, pagingCounter: 1, hasPrevPage: false, hasNextPage: false, prevPage: null, nextPage: null }
+                }); 
+            }
+            query.provider ={ _id: providerByName._id };
+        }
+
+        // const { _id: categoryId } = await Category.findOne({ name: searchedCategory }) || {}; 
+        // const { _id: providerId } = await Provider.findOne({ name: searchedProvider }) || {}; 
+        // console.log({ searchedName, searchedCategory, categoryId, searchedProvider, providerId });
+        // if ( (category !== '' && categoryId === undefined) || (provider !== '' && providerId === undefined) ){ //* Si nos manda categoría o provider con nombres equivocados, directamente mandaremos un arreglo vacio
+        //     return res.status( 200 ).json({
+        //         ok: true,
+        //         products: { docs: [], totalDocs: 0, limit: 5, totalPages: 1, page: 1, pagingCounter: 1, hasPrevPage: false, hasNextPage: false, prevPage: null, nextPage: null }
+        //     });
+        // }
+        // const query = {
+        //     name: { $regex: '.*' + searchedName + '.*' },
+        //     category: { _id: categoryId },
+        //     provider: { _id: providerId }
+        // };
+        // if ( query.category._id === undefined ) delete query.category;
+        // if ( query.provider._id === undefined ) delete query.provider;
 
         const products = await Product.paginate(
             query,
