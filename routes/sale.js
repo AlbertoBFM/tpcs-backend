@@ -6,12 +6,14 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const { fieldValidators } = require('../middlewares/fieldValidator');
 const { validateJWT } = require('../middlewares/validateJWT');
-const { getSales, createSale, deleteSale, validateProductStock } = require('../controllers/sale');
+const { getSales, createSale, deleteSale, validateProductStock, getAllSales } = require('../controllers/sale');
 
 const router = Router();
 
 router.use( validateJWT );
 
+// Get All Sales
+router.get( '/all', getAllSales );
 // Get Sales
 router.get( '/', getSales );
 // Validate product stock

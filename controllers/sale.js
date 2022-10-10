@@ -1,17 +1,76 @@
 const { response } = require('express');
+const { formatDate } = require('../helpers/formatDate');
 const Product = require('../models/Product');
 const Sale = require('../models/Sale');
+const User = require('../models/User');
+
+const getAllSales = async ( req, res = response ) => {
+    try {
+        const sales = await Sale.find().populate( 'user', 'name' );
+    
+        return res.status( 200 ).json({
+            ok: true,
+            sales
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador'
+        });
+    }
+}
 
 const getSales = async ( req, res = response ) => {
+    try {
+        const { limit = 5, page = 1, user = '', client = '', startDate = '', endDate = '' } = req.query; 
+        const searchedUser = user.trim();
+        const searchedClient = client.trim();
 
-    const sales = await Sale.find()
-                                .populate( 'user', 'name' );
+        if ( !(startDate === '' && endDate === '' || startDate !== '' && endDate !== '') ) { //* el inicio y final deben estar con datos o no estarlos para que realice una consulta
+            return res.status( 200 ).json({
+                ok: true,
+                products: { docs: [], totalDocs: 0, limit: 5, totalPages: 1, page: 1, pagingCounter: 1, hasPrevPage: false, hasNextPage: false, prevPage: null, nextPage: null }
+            });
+        }
 
-    return res.status( 200 ).json({
-        ok: true,
-        sales
-    });
+        let query = {};
+        if ( searchedClient !== '' ) {
+            query.client = { $regex: '.*' + searchedClient + '.*' };
+        }
 
+        if ( searchedUser !== '' ) { //*Buscar por nombre de Usuario
+            console.log('hola');
+            const userByName = await User.findOne({ name: searchedUser }) || {}; 
+            if ( userByName._id === undefined ){
+                return res.status( 200 ).json({
+                    ok: true,
+                    products: { docs: [], totalDocs: 0, limit: 5, totalPages: 1, page: 1, pagingCounter: 1, hasPrevPage: false, hasNextPage: false, prevPage: null, nextPage: null }
+                });
+            }
+            query.user = { _id: userByName._id };
+        }
+
+        if (startDate !== '' && endDate !== '') { //* Buscar por Rango de Fechas
+            const modifiedEndDate = formatDate( new Date( endDate ), 2 );
+            query.date = { $gte: startDate, $lt: modifiedEndDate };
+        }
+        console.log({query});
+        const sales = await Sale.paginate( query, { limit, page, populate: { path: 'user', select: 'name' } } );
+
+        return res.status( 200 ).json({
+            ok: true,
+            count: sales.docs.length,
+            sales
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador',
+            error
+        });
+    }
 }
 
 const validateProductStock = async (req, res = response) => {
@@ -110,6 +169,7 @@ const deleteSale = async ( req, res = response ) => {
 }
 
 module.exports = {
+    getAllSales,
     getSales,
     validateProductStock,
     createSale,
