@@ -24,7 +24,7 @@ const getAllSales = async ( req, res = response ) => {
 const getSales = async ( req, res = response ) => {
     try {
         const { limit = 5, page = 1, user = '', client = '', startDate = '', endDate = '' } = req.query; 
-        const searchedUser = user.trim();
+        const searchedUser = user.toUpperCase().trim();
         const searchedClient = client.trim();
 
         if ( !(startDate === '' && endDate === '' || startDate !== '' && endDate !== '') ) { //* el inicio y final deben estar con datos o no estarlos para que realice una consulta
@@ -40,7 +40,7 @@ const getSales = async ( req, res = response ) => {
         }
 
         if ( searchedUser !== '' ) { //*Buscar por nombre de Usuario
-            const userByName = await User.findOne({ name: searchedUser }) || {}; 
+            const userByName = await User.findOne({ name: { $regex: '.*' + searchedUser + '.*' } }) || {}; 
             if ( userByName._id === undefined ){
                 return res.status( 200 ).json({
                     ok: true,

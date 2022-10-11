@@ -4,12 +4,34 @@ const User = require('../models/User');
 const Sale = require('../models/Sale');
 
 const getUsers = async ( req, res = response ) => {
-    const users = await User.find();
+    try {
+        const { limit = 5, page = 1, name = '', email = '' } = req.query;
+        const searchedName = name.toUpperCase().trim();
+        const searchedEmail = email.toLowerCase().trim();
+        
+        const users = await User.paginate(
+            { 
+                name: { $regex: '.*' + searchedName + '.*' },
+                email: { $regex: '.*' + searchedEmail + '.*' },
+            }, 
+            { 
+                limit,
+                page,
+                sort: { name: 1 } 
+            }
+        );
 
-    return res.status( 200 ).json({
-        ok: true,
-        users
-    });
+        return res.status( 200 ).json({
+            ok: true,
+            users
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador'
+        });
+    }
 }
 
 const createUser = async ( req, res = response ) => {
@@ -18,7 +40,7 @@ const createUser = async ( req, res = response ) => {
 
     try {
 
-        const userByName = await User.findOne({ name });
+        const userByName = await User.findOne({ name: name.toUpperCase().trim() });
         
         if ( userByName )
             return res.status( 400 ).json({
@@ -26,7 +48,7 @@ const createUser = async ( req, res = response ) => {
                 msg: 'Un usuario existe con ese Nombre'
             });
 
-        const userByEmail = await User.findOne({ email });
+        const userByEmail = await User.findOne({ email: email.toLowerCase().trim() });
         
         if ( userByEmail )
             return res.status( 400 ).json({
@@ -34,6 +56,8 @@ const createUser = async ( req, res = response ) => {
                 msg: 'Un usuario existe con ese email'
             });
 
+        req.body.name = name.toUpperCase().trim(); 
+        req.body.email = email.toLowerCase().trim(); 
         const newUser = new User( req.body );
 
         // Encriptar contraseña
