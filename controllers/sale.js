@@ -40,7 +40,6 @@ const getSales = async ( req, res = response ) => {
         }
 
         if ( searchedUser !== '' ) { //*Buscar por nombre de Usuario
-            console.log('hola');
             const userByName = await User.findOne({ name: searchedUser }) || {}; 
             if ( userByName._id === undefined ){
                 return res.status( 200 ).json({
@@ -54,6 +53,11 @@ const getSales = async ( req, res = response ) => {
         if (startDate !== '' && endDate !== '') { //* Buscar por Rango de Fechas
             const modifiedEndDate = formatDate( new Date( endDate ), 2 );
             query.date = { $gte: startDate, $lt: modifiedEndDate };
+        }
+        else{
+            const startDate = formatDate( new Date(), 0 );
+            const endDate = formatDate( new Date(), 1 );
+            query.date = { $gte: startDate, $lt: endDate };
         }
         console.log({query});
         const sales = await Sale.paginate( query, { limit, page, populate: { path: 'user', select: 'name' } } );
