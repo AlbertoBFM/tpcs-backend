@@ -59,7 +59,7 @@ const getSales = async ( req, res = response ) => {
             const endDate = formatDate( new Date(), 1 );
             query.date = { $gte: startDate, $lt: endDate };
         }
-        console.log({query});
+        // console.log({query});
         const sales = await Sale.paginate( query, { limit, page, populate: { path: 'user', select: 'name' } } );
 
         return res.status( 200 ).json({

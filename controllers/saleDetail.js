@@ -122,40 +122,6 @@ const deleteSaleDetail = async ( req, res = response ) => {
 
 }
 
-// const deleteSaleDetail = async ( req, res = response ) => {
-
-//     const saleId = req.params.id;
-
-//     try {
-        
-//         const saleById = await Sale.findById( saleId ); //* buscar si venta existe
-    
-//         if ( !saleById )
-//             return res.status( 400 ).json({
-//                 ok: false,
-//                 msg: 'El Id de venta no existe'
-//             });
-
-//         const deletedSaleDetail = await SaleDetail.deleteMany( { sale: saleId } );
-
-//         console.log( deletedSaleDetail );
-//         return res.status( 200 ).json({
-//             ok: true,
-//             deletedSaleDetail
-//         });
-
-//     } catch (error) {
-        
-//         console.log( error );
-//         return res.status( 500 ).json({
-//             ok: false,
-//             msg: 'Hable con el Administrador'
-//         });
-
-//     }
-
-// }
-
 module.exports = {
     getSalesDetails,
     getDetailBySaleId,

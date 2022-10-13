@@ -1,7 +1,6 @@
 const { Schema, model } = require('mongoose');
 
 const SaleDetailSchema = Schema({
-
     sale: {
         type: Schema.Types.ObjectId,
         ref: 'Sale',
@@ -12,6 +11,10 @@ const SaleDetailSchema = Schema({
         ref: 'Product',
         required: true
     },
+    salePrice: {
+        type: Number,
+        required: true
+    },
     quantity: {
         type: Number,
         required: true
@@ -20,7 +23,6 @@ const SaleDetailSchema = Schema({
         type: Number,
         required: true
     },
-
 });
 
 SaleDetailSchema.method('toJSON', function () {
