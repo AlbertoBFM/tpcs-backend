@@ -25,8 +25,16 @@ const loginUser = async ( req, res = response ) => {
                 msg: 'Password incorrecto'
             });
 
+        if ( user.online === true )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'El usuario ya esta En Linea'
+            });
+
         // Generar JWT
         const token = await generarJWT( user.id, user.name, user.email, user.userType );
+
+        await User.findByIdAndUpdate( user.id, { $set: { online: true } } );
 
         res.status( 202 ).json({
             ok: true,
@@ -38,12 +46,32 @@ const loginUser = async ( req, res = response ) => {
         });
 
     } catch (error) {
+        console.log({error});
         return res.status( 500 ).json({
             ok: false,
             msg: 'Por favor hable con el Administrador'
         });
     }
 
+}
+
+const logoutUser = async ( req, res = response ) => {
+    try {
+        const userId = req.params.id;
+
+        await User.findByIdAndUpdate( userId, { $set: { online: false } } );
+
+        res.status( 200 ).json({
+            ok: true,
+            msg: 'Sesión cerrada con exito'
+        });
+    } catch (error) {
+        console.log({error});
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Por favor hable con el Administrador'
+        });
+    }
 }
 
 const revalidateToken = async ( req, res = response ) => {
@@ -66,5 +94,6 @@ const revalidateToken = async ( req, res = response ) => {
 
 module.exports = {
     loginUser,
+    logoutUser,
     revalidateToken
 };

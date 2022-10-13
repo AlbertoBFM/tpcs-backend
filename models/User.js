@@ -18,6 +18,14 @@ const UserSchema = Schema({
     userType: {
         type: String,
         default: 'employee',
+    },
+    online: {
+        type: Boolean,
+        default: false,
+    },
+    enabled: {
+        type: Boolean,
+        default: true,
     }
 });
 
