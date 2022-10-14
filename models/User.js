@@ -26,7 +26,11 @@ const UserSchema = Schema({
     enabled: {
         type: Boolean,
         default: true,
-    }
+    },
+    token: {
+        type: String,
+        default: '',
+    },
 });
 
 UserSchema.plugin(mongoosePaginate);

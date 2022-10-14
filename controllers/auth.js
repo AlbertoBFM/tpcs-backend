@@ -2,6 +2,7 @@ const { response } = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { generarJWT } = require('../helpers/jwt');
+const { validateTokenOnLogin } = require('../helpers/validateTokenonLogin');
 
 const loginUser = async ( req, res = response ) => {
 
@@ -25,18 +26,20 @@ const loginUser = async ( req, res = response ) => {
                 msg: 'Password incorrecto'
             });
 
-        if ( user.online === true )
+        //* Lógica
+        //* Nos basamos en el token registrado en el archivo Usuario, si elimina manualmente el storage. Entonces tendrá que esperar a que caduque esa sesión del token y recien podrá iniciar sesión nuevamente
+        const logedUser = validateTokenOnLogin( user.token );
+        if ( logedUser )
             return res.status( 400 ).json({
                 ok: false,
-                msg: 'El usuario ya esta En Linea'
+                msg: 'Este usuario ya se encuentra en Sesión'
             });
 
-        // Generar JWT
         const token = await generarJWT( user.id, user.name, user.email, user.userType );
 
-        await User.findByIdAndUpdate( user.id, { $set: { online: true } } );
+        await User.findByIdAndUpdate( user.id, { $set: { online: true, token } } );
 
-        res.status( 202 ).json({
+        return res.status( 202 ).json({
             ok: true,
             uid: user.id,
             name: user.name,
@@ -59,7 +62,7 @@ const logoutUser = async ( req, res = response ) => {
     try {
         const userId = req.params.id;
 
-        await User.findByIdAndUpdate( userId, { $set: { online: false } } );
+        await User.findByIdAndUpdate( userId, { $set: { online: false, token: '' } } );
 
         res.status( 200 ).json({
             ok: true,
@@ -77,9 +80,9 @@ const logoutUser = async ( req, res = response ) => {
 const revalidateToken = async ( req, res = response ) => {
 
     const { uid, name, email, userType } = req;
-    // console.log(req);
     
     const token = await generarJWT( uid, name, email, userType );
+    await User.findByIdAndUpdate( uid, { $set: { online: true, token } } );
 
     res.json({
         ok: true,
