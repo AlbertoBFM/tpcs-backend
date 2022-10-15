@@ -14,8 +14,9 @@ const validateTokenOnLogin = ( token ) => {
             userType
         }
     } catch (error) {
-        console.log('Token no valido para iniciar sesión');
-        console.log('Error: ', error);
+        // console.log('Token no valido para iniciar sesión');
+        console.log('El token ya no es valido, Cambio de token');
+        // console.log('Error: ', error);
         return;
     }
 }

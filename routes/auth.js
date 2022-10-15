@@ -20,7 +20,7 @@ router.post(
     loginUser 
 );
 
-router.post( '/logout/:id', validateJWT, logoutUser );
+router.post( '/logout/:id', logoutUser );
 
 router.get( '/renew', validateJWT, revalidateToken );
 
