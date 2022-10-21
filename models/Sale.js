@@ -13,6 +13,7 @@ const SaleSchema = Schema({
     },
     date: {
         type: Date,
+        default: new Date().getTime(),
         required: true
     },
     total: {

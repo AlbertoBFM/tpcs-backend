@@ -23,7 +23,6 @@ router.post( '/validateStock', validateProductStock );
 router.post( 
     '/',
     [
-        check('date', 'La fecha y hora de la venta son invalidas').isNumeric(),
         check('total', 'El total de la venta es invalido').isNumeric(),
         fieldValidators
     ], 
