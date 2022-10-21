@@ -20,8 +20,6 @@ router.post(
     loginUser 
 );
 
-router.post( '/logout/:id', logoutUser );
-
 router.get( '/renew', validateJWT, revalidateToken );
 
 module.exports = router;
