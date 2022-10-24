@@ -3,6 +3,11 @@ const { formatDate } = require('../helpers/formatDate');
 const Product = require('../models/Product');
 const Sale = require('../models/Sale');
 const User = require('../models/User');
+const PDF = require('pdfkit');
+const puppeteer = require('puppeteer');
+const path = require('path');
+const fs = require('fs');
+const hbs = require('handlebars');
 
 const getAllSales = async ( req, res = response ) => {
     try {
@@ -171,11 +176,115 @@ const deleteSale = async ( req, res = response ) => {
     }
 
 }
+const data = {
+  "users": [
+    {
+      "name": "KANE WILLIAMSON",
+      "age": 32,
+      "country": "NEW ZEALAND"
+    },
+    {
+      "name": "ROSS TAYLOR",
+      "age": 38,
+      "country": "NEW ZEALAND"
+    },
+    {
+      "name": "TOM LATHAM",
+      "age": 31,
+      "country": "NEW ZEALAND"
+    },
+    {
+      "name": "TIM SOUTHEE",
+      "age": 33,
+      "country": "NEW ZEALAND"
+    }
+    ,
+    {
+      "name": "SOY LA MAMADA PAPU",
+      "age": 33,
+      "country": "NEW ZEALAND"
+    }
+  ]
+}
+//* PROBANDO
+const compile = async function (templateName, data) {
+    const filePath = path.join(process.cwd(), 'templates', `${templateName}.hbs`);
+    const html = await fs.readFileSync(filePath, 'utf-8');
+    console.log(html)
+    return hbs.compile(html)(data);
+};
+const getSalesReport = async ( req, res = response ) => {
+    // Create a browser instance
+    const browser = await puppeteer.launch();
+
+    // Create a new page
+    const page = await browser.newPage();
+    // Para que rederice la data y se cree el pdf con el template
+    const content = await compile('saleTemplate', data);
+
+     //Get HTML content from HTML file
+    await page.setContent(content);
+
+    //To reflect CSS used for screens instead of print
+    await page.emulateMediaType('screen');
+
+    // Downlaod the PDF
+    await page.pdf({
+        path: 'reports/saleReport.pdf',
+        margin: { top: '100px', right: '50px', bottom: '100px', left: '50px' },
+        printBackground: true,
+        format: 'A4',
+    });
+
+    
+    // Close the browser instance
+    await browser.close();
+    res.contentType("application/pdf");
+    res.sendFile(path.join(__dirname, '../reports/saleReport.pdf'));
+
+    // const doc = new PDF({ bufferPages: true });
+
+    // const fileName = `Reporte_Venta_${ Date.now() }.pdf`;
+
+    // const stream = res.writeHead(200, {
+    //     'Content-Type': 'application/pdf',
+    //     'Content-disposition': `attachment;filename=${ fileName }`
+    // });
+
+    // doc.on('data', ( data ) => stream.write( data ));
+    // doc.on('end', () => stream.end());
+
+    // doc.text('Hola que hace papu, soy un PDF. <h1>SIIUUUUUUU</h1>', 100, 100);
+
+    // doc.end();
+    //**otro
+    // var doc = new PDF({bufferPages: true});
+
+    // const stream = res.writeHead(200, {
+    //     'Content-Type': 'application/pdf',
+    //     'Content-disposition': 'attachment;filename=test.pdf',
+    // });
+    // doc.text(`this is a test text`);
+    
+    // doc.on('data',  ( data ) => stream.write( data ));
+    // doc.on('end', () => { stream.end() });
+    
+    // doc.end();
+    // console.log('jofer');
+    // var file = fs.createReadStream('prueba.pdf');
+    // console.log('direction: ',__dirname,'../prueba.pdf');
+    // var stat = fs.statSync('prueba.pdf');
+    // res.setHeader('Content-Length', stat.size);
+    // res.setHeader('Content-Type', 'application/pdf');
+    // res.setHeader('Content-Disposition', 'attachment; filename=prueba.pdf');
+    // file.pipe(res);
+}
 
 module.exports = {
     getAllSales,
     getSales,
     validateProductStock,
     createSale,
-    deleteSale
+    deleteSale,
+    getSalesReport
 }
