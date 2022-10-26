@@ -6,7 +6,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const { fieldValidators } = require('../middlewares/fieldValidator');
 const { validateJWT } = require('../middlewares/validateJWT');
-const { getSales, createSale, deleteSale, validateProductStock, getAllSales, getSalesReport } = require('../controllers/sale');
+const { getSales, createSale, deleteSale, validateProductStock, getAllSales, getSalesReportByDates } = require('../controllers/sale');
 
 const router = Router();
 
@@ -33,6 +33,6 @@ router.post(
 router.delete( '/:id', deleteSale );
 
 // Sale Report
-router.get( '/report', getSalesReport );
+router.get( '/report', getSalesReportByDates );
 
 module.exports = router;

@@ -56,8 +56,9 @@ const getSales = async ( req, res = response ) => {
         }
 
         if (startDate !== '' && endDate !== '') { //* Buscar por Rango de Fechas
-            const modifiedEndDate = formatDate( new Date( endDate ), 2 );
-            query.date = { $gte: startDate, $lt: modifiedEndDate };
+            const modifiedStartDate = formatDate( new Date( startDate ), 1);
+            const modifiedEndDate = formatDate( new Date( endDate ), 2);
+            query.date = { $gte: modifiedStartDate, $lt: modifiedEndDate };
         }
         else{
             const startDate = formatDate( new Date(), 0 );
@@ -121,7 +122,9 @@ const validateProductStock = async (req, res = response) => {
 const createSale = async ( req, res = response ) => {
 
     try {
-        
+        console.log(req.body.date);
+        // req.body.date = new Date().toISOString();
+        // console.log(req.body.date);
         const newSale = new Sale( req.body );
         newSale.user = req.uid; 
         
@@ -177,32 +180,32 @@ const deleteSale = async ( req, res = response ) => {
 
 }
 const data = {
-  "users": [
+  users: [
     {
-      "name": "KANE WILLIAMSON",
-      "age": 32,
-      "country": "NEW ZEALAND"
+      name: "KANE WILLIAMSONs",
+      age: 32,
+      country: "NEW ZEALAND"
     },
     {
-      "name": "ROSS TAYLOR",
-      "age": 38,
-      "country": "NEW ZEALAND"
+      name: "ROSS TAYLOR",
+      age: 38,
+      country: "NEW ZEALAND"
     },
     {
-      "name": "TOM LATHAM",
-      "age": 31,
-      "country": "NEW ZEALAND"
+      name: "TOM LATHAM",
+      age: 31,
+      country: "NEW ZEALAND"
     },
     {
-      "name": "TIM SOUTHEE",
-      "age": 33,
-      "country": "NEW ZEALAND"
+      name: "TIM SOUTHEE",
+      age: 33,
+      country: "NEW ZEALAND"
     }
     ,
     {
-      "name": "SOY LA MAMADA PAPU",
-      "age": 33,
-      "country": "NEW ZEALAND"
+      name: "SOY LA MAMADA PAPU",
+      age: 33,
+      country: "NEW ZEALAND"
     }
   ]
 }
@@ -213,13 +216,30 @@ const compile = async (templateName, data) => {
     return hbs.compile(html)(data);
 };
 
-const getSalesReport = async ( req, res = response ) => {
+const getSalesReportByDates = async ( req, res = response ) => {
+
+
+    // const { startDate = '', endDate = '' } = req.query; 
+
+    // if ( startDate === '' || endDate === '' )
+    //     return res.status( 400 ).json({
+    //         ok: false,
+    //         msg: 'Datos de fechas invalidas'
+    //     });
+
+    const sales = await Sale.find({})
+    .lean()
+    .populate( 'user', 'name' );
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    const content = await compile('saleTemplate', data);
+console.log({ sales: sales});
+console.log(data);
+    const content = await compile('saleTemplate', { sales });
+
     await page.setContent(content);
     await page.emulateMediaType('screen');
     const pdf = await page.pdf({
+        //*If you want create pdf file, then add property 'path' in this object
         margin: { top: '50px', right: '50px', bottom: '50px', left: '50px' },
         printBackground: true,
         format: 'A4',
@@ -227,7 +247,7 @@ const getSalesReport = async ( req, res = response ) => {
     await browser.close();
 
     res.contentType('application/pdf');
-    return res.send(pdf);
+    return res.status(200).send(pdf);
 }
 
 module.exports = {
@@ -236,5 +256,5 @@ module.exports = {
     validateProductStock,
     createSale,
     deleteSale,
-    getSalesReport
+    getSalesReportByDates
 }
