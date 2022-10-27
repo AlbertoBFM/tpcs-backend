@@ -7,7 +7,7 @@ const SaleDetail = require('../models/SaleDetail');
 const getSalesDetails = async ( req, res = response ) => {
 
     const salesDetails = await SaleDetail.find()
-                                            .populate( 'product', 'name salePrice' );
+                                            .populate( 'product', 'name' );
 
     return res.status( 200 ).json({
         ok: true,

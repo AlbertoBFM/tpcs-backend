@@ -28,6 +28,7 @@ app.use( '/api/provider', require('./routes/provider') );
 app.use( '/api/product', require('./routes/product') );
 app.use( '/api/sale', require('./routes/sale') );
 app.use( '/api/saleDetail', require('./routes/saleDetail') );
+app.use( '/api/report', require('./routes/report') );
 app.use( '/api/user', require('./routes/user') );
 
 // Listen requests

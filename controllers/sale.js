@@ -1,9 +1,8 @@
 const { response } = require('express');
-const { formatDate } = require('../helpers/formatDate');
+const { formatDateToQuery, formatTime, formatDate } = require('../helpers/formatDate');
 const Product = require('../models/Product');
 const Sale = require('../models/Sale');
 const User = require('../models/User');
-const PDF = require('pdfkit');
 const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
@@ -56,17 +55,17 @@ const getSales = async ( req, res = response ) => {
         }
 
         if (startDate !== '' && endDate !== '') { //* Buscar por Rango de Fechas
-            const modifiedStartDate = formatDate( new Date( startDate ), 1);
-            const modifiedEndDate = formatDate( new Date( endDate ), 2);
+            const modifiedStartDate = formatDateToQuery( new Date( startDate ), 1);
+            const modifiedEndDate = formatDateToQuery( new Date( endDate ), 2);
             query.date = { $gte: modifiedStartDate, $lt: modifiedEndDate };
         }
         else{
-            const startDate = formatDate( new Date(), 0 );
-            const endDate = formatDate( new Date(), 1 );
+            const startDate = formatDateToQuery( new Date(), 0 );
+            const endDate = formatDateToQuery( new Date(), 1 );
             query.date = { $gte: startDate, $lt: endDate };
         }
         // console.log({query});
-        const sales = await Sale.paginate( query, { limit, page, populate: { path: 'user', select: 'name' } } );
+        const sales = await Sale.paginate( query, { limit, page, populate: { path: 'user', select: 'name' }, sort: { date: 1 } } );
 
         return res.status( 200 ).json({
             ok: true,
@@ -179,82 +178,11 @@ const deleteSale = async ( req, res = response ) => {
     }
 
 }
-const data = {
-  users: [
-    {
-      name: "KANE WILLIAMSONs",
-      age: 32,
-      country: "NEW ZEALAND"
-    },
-    {
-      name: "ROSS TAYLOR",
-      age: 38,
-      country: "NEW ZEALAND"
-    },
-    {
-      name: "TOM LATHAM",
-      age: 31,
-      country: "NEW ZEALAND"
-    },
-    {
-      name: "TIM SOUTHEE",
-      age: 33,
-      country: "NEW ZEALAND"
-    }
-    ,
-    {
-      name: "SOY LA MAMADA PAPU",
-      age: 33,
-      country: "NEW ZEALAND"
-    }
-  ]
-}
-//* Create pdf with data
-const compile = async (templateName, data) => {
-    const filePath = path.join(process.cwd(), 'templates', `${templateName}.hbs`);
-    const html = fs.readFileSync(filePath, 'utf-8');
-    return hbs.compile(html)(data);
-};
-
-const getSalesReportByDates = async ( req, res = response ) => {
-
-
-    // const { startDate = '', endDate = '' } = req.query; 
-
-    // if ( startDate === '' || endDate === '' )
-    //     return res.status( 400 ).json({
-    //         ok: false,
-    //         msg: 'Datos de fechas invalidas'
-    //     });
-
-    const sales = await Sale.find({})
-    .lean()
-    .populate( 'user', 'name' );
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-console.log({ sales: sales});
-console.log(data);
-    const content = await compile('saleTemplate', { sales });
-
-    await page.setContent(content);
-    await page.emulateMediaType('screen');
-    const pdf = await page.pdf({
-        //*If you want create pdf file, then add property 'path' in this object
-        margin: { top: '50px', right: '50px', bottom: '50px', left: '50px' },
-        printBackground: true,
-        format: 'A4',
-    });
-    await browser.close();
-
-    res.contentType('application/pdf');
-    return res.status(200).send(pdf);
-}
 
 module.exports = {
     getAllSales,
     getSales,
     validateProductStock,
     createSale,
-    deleteSale,
-    getSalesReportByDates
+    deleteSale
 }

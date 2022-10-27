@@ -32,7 +32,4 @@ router.post(
 // Delete Sale
 router.delete( '/:id', deleteSale );
 
-// Sale Report
-router.get( '/report', getSalesReportByDates );
-
 module.exports = router;

@@ -9,27 +9,48 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center">
-            Reporte PDF
+        <h1 class="text-center mb-4">
+            Reporte de Ventas
         </h1>
-        <table class="table table-dark table-striped">
-            <thead>
+        <div class="d-flex justify-content-between">
+            <p><b>Fecha Inicio:</b> {{ start }}</p>
+            <p><b>Fecha Final:</b> {{ end }}</p>
+        </div>
+        <p><b>Fecha de Emición de Reporte:</b> {{ today }}</p>
+        <hr>
+        <table class="table table-striped text-center">
+            <thead class="table-dark">
                 <tr>
+                    <th>Nº</th>
+                    <th>User</th>
                     <th>Cliente</th>
                     <th>Fecha</th>
-                    <th>Total</th>
+                    <th>Subtotal</th>
                 </tr>
             </thead>
             <tbody>
-                {{#each sales as | sale |}}
+                {{#each salesDates as | sale |}}
                     <tr>
-                        <td>{{sale.client}}1</td>
-                        <td>{{sale.date}}</td> 
-                        <td>{{sale.total}}</td>
+                        <td>{{sale.index}}</td>
                         <td>{{sale.user.name}}</td>
+                        {{!-- <td>{{sale.client}}</td> --}}
+                        {{#if sale.client}}
+                            <td>{{sale.client}}</td>
+                        {{else}}
+                            <td>Sin Datos</td>
+                        {{/if}}
+                        <td>{{sale.date}}</td> 
+                        <td>{{sale.total}} bs.</td>
                     </tr>
                 {{/each}}
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="bg-white border-white">&nbsp;</td>
+                    <td class="table-dark"><b>Total</b></td>
+                    <td class="table-dark"><b>{{totalSum}} bs.</b></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </body>
