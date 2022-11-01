@@ -23,6 +23,7 @@ const createPdf = async ({ template, data }) => {
         margin: { top: '40px', right: '50px', bottom: '50px', left: '40px' },
         printBackground: true,
         format: 'A4',
+        // landscape: true,
     });
     await browser.close();
 

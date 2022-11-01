@@ -6,7 +6,7 @@ const formatDateToQuery = (date, days) => {
     const month = padTo2Digits( date.getMonth() + 1 );
     const year = date.getFullYear();
 
-    return `${ year }-${ month }-${ day }T04:00:00`;
+    return `${ year }-${ month }-${ day }T00:00:00`;
 }
 
 const formatDate = (date, days) => {
