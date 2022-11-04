@@ -34,6 +34,32 @@ const getUsers = async ( req, res = response ) => {
     }
 }
 
+const toggleEnabledUser = async ( req, res = response ) => {
+    const userId = req.params.id;
+
+    try {
+        const user = await User.findById( userId ); //* buscar si usuario existe
+        if ( !user )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'El Id de Usuario no existe'
+            });
+
+        await User.findByIdAndUpdate(userId, { $set: { enabled: !user.enabled } });
+
+        return res.status( 200 ).json({
+            ok: true,
+            msg: 'Usuario Actualizado'
+        });
+    } catch (error) {
+        console.log( error );
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Hable con el Administrador'
+        });
+    }
+}
+
 const createUser = async ( req, res = response ) => {
 
     const { name, email, password } = req.body;
@@ -121,6 +147,7 @@ const deleteUser = async ( req, res = response ) => {
 
 module.exports = {
     getUsers,
+    toggleEnabledUser,
     createUser,
     deleteUser
 };

@@ -25,6 +25,12 @@ const loginUser = async ( req, res = response ) => {
                 msg: 'Password incorrecto'
             });
 
+        if ( !user.enabled )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'No tiene acceso al Sistema, comuniquese con el Administrador'
+            });
+
         const token = await generarJWT( user.id, user.name, user.email, user.userType );
 
         return res.status( 202 ).json({
@@ -63,7 +69,98 @@ const revalidateToken = async ( req, res = response ) => {
 
 }
 
+const updateUser = async ( req, res = response ) => {
+    const userId = req.params.id;
+    const { name, email } = req.body;
+    console.log({userId});
+    try {
+        const user = await User.findById(userId);
+        if ( !user )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'El Id de Usuario no existe'
+            });
+
+        const userByName = await User.findOne({ name: name.toUpperCase().trim(), _id: { $ne: userId } });
+        if ( userByName )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'Un usuario existe con ese Nombre'
+            });
+
+        const userByEmail = await User.findOne({ email: email.toLowerCase().trim(), _id: { $ne: userId } });
+        if ( userByEmail )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'Un usuario existe con ese email'
+            });
+
+        const newName = name.toUpperCase().trim(); 
+        const newEmail = email.toLowerCase().trim(); 
+
+        const updatedUser = await User.findByIdAndUpdate(userId, { $set: { name: newName, email: newEmail } });
+
+        return res.status( 200 ).json({
+            ok: true,
+            updatedUser,
+            msg: 'Usuario Actualizado'
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Por favor hable con el Administrador'
+        });
+    }
+}
+
+const updatePassword = async ( req, res = response ) => {
+    const userId = req.params.id;
+    const { oldPassword, password, confirmPassword } = req.body;
+    // console.log({userId});
+    try {
+        const user = await User.findById(userId);
+        if ( !user )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'El Id de Usuario no existe'
+            });
+
+        const validPassword = bcrypt.compareSync( oldPassword, user.password );
+        if ( !validPassword )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'Contraseña incorrecta'
+            });
+
+        if ( password !== confirmPassword )
+            return res.status( 400 ).json({
+                ok: false,
+                msg: 'La contraseña nueva y la de confirmación deben ser iguales'
+            });
+
+        // Encriptar contraseña
+        const salt = bcrypt.genSaltSync();
+        const newPassword = bcrypt.hashSync( password, salt );
+
+        await User.findByIdAndUpdate(userId, { $set: { password: newPassword } });
+
+        return res.status( 200 ).json({
+            ok: true,
+            msg: 'Contraseña actualizada'
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status( 500 ).json({
+            ok: false,
+            msg: 'Por favor hable con el Administrador'
+        });
+    }
+}
+
 module.exports = {
     loginUser,
-    revalidateToken
+    revalidateToken,
+    updateUser,
+    updatePassword
 };
