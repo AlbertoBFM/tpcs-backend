@@ -26,7 +26,8 @@
                     <th>Categoría</th>
                     <th>Proveedor</th>
                     <th>Cantidad Vendida</th>
-                    <th>Suma de Ventas</th>
+                    <th>Ventas(bs.)</th>
+                    <th>Ganancias(bs.)</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,7 +38,8 @@
                         <td>{{detail.product.category}}</td> 
                         <td>{{detail.product.provider}}</td>
                         <td>{{detail.quantitySum}}</td> 
-                        <td>{{detail.saleSum}} bs.</td> 
+                        <td>{{detail.saleSum}}</td>
+                        <td>{{detail.profitSum}}</td> 
                     </tr>
                 {{/each}}
             </tbody>
@@ -46,7 +48,8 @@
                     <td colspan="3" class="bg-white border-white">&nbsp;</td>
                     <td class="table-dark"><b>Total</b></td>
                     <td class="table-dark"><b>{{totalQuantity}}</b></td>
-                    <td class="table-dark"><b>{{totalSales}} bs.</b></td>
+                    <td class="table-dark"><b>{{totalSales}}</b></td>
+                    <td class="table-dark"><b>{{totalProfit}}</b></td>
                 </tr>
             </tfoot>
         </table>

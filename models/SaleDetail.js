@@ -15,6 +15,14 @@ const SaleDetailSchema = Schema({
         type: Number,
         required: true
     },
+    purchasePrice: {
+        type: Number,
+        required: true
+    },
+    profit: {
+        type: Number,
+        required: true
+    },
     quantity: {
         type: Number,
         required: true

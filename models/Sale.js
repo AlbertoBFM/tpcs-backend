@@ -16,6 +16,10 @@ const SaleSchema = Schema({
         default: new Date().getTime(),
         required: true
     },
+    profit: {
+        type: Number,
+        required: true
+    },
     total: {
         type: Number,
         required: true

@@ -119,11 +119,7 @@ const validateProductStock = async (req, res = response) => {
 }
 
 const createSale = async ( req, res = response ) => {
-
     try {
-        console.log(req.body.date);
-        // req.body.date = new Date().toISOString();
-        // console.log(req.body.date);
         const newSale = new Sale( req.body );
         newSale.user = req.uid; 
         
@@ -133,7 +129,6 @@ const createSale = async ( req, res = response ) => {
             ok: true,
             sale: savedSale
         });
-
     } catch (error) {
         
         console.log( error );
@@ -143,7 +138,6 @@ const createSale = async ( req, res = response ) => {
         });
 
     }
-
 }
 
 const deleteSale = async ( req, res = response ) => {

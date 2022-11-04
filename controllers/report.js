@@ -19,16 +19,17 @@ const getSalesReport = async ( req, res = response ) => {
     const templateStart = formatDate(new Date( startDate ), 1);
     const templateEnd = formatDate(new Date( endDate ), 1);
     const today = formatTime( new Date() );
-    let totalSum = 0;
+    let totalSum = 0, totalProfit = 0;
     const sales = await Sale.find({ date: { $gte: start, $lt: end } }).lean().populate( 'user', 'name' ).sort({ date: 1 });
     const salesDates = sales.map( (sale, index) => {
         sale.index = index + 1;
         sale.date = formatTime(sale.date);
         totalSum += sale.total;
+        totalProfit += sale.profit || 0;
         return sale;
     });
 
-    const pdf = await createPdf({ template: 'saleTemplate', data: { salesDates, start: templateStart, end: templateEnd, today, totalSum } });
+    const pdf = await createPdf({ template: 'saleTemplate', data: { salesDates, start: templateStart, end: templateEnd, today, totalSum, totalProfit } });
 
     res.contentType('application/pdf');
     return res.status(200).send(pdf);
@@ -120,10 +121,12 @@ const getSalesDetailsReport = async ( req, res = response ) => {
         const detail = filteredDetails.find( detail => detail.product._id === idProduct );
         const quantitySum = filteredDetails.filter( detail => detail.product._id === idProduct ).map( detail => detail.quantity ).reduce( (a,b) => a + b );
         const saleSum = filteredDetails.filter( detail => detail.product._id === idProduct ).map( detail => detail.subtotal ).reduce( (a,b) => a + b );
+        const profitSum = filteredDetails.filter( detail => detail.product._id === idProduct ).map( detail => detail.profit ).reduce( (a,b) => a + b );
 
         return {
             product: { id: idProduct, name: detail.product.name, category: detail.product.category.name, provider: detail.product.provider.name },
             quantitySum,
+            profitSum,
             saleSum
         }
     });
@@ -131,15 +134,16 @@ const getSalesDetailsReport = async ( req, res = response ) => {
     const templateStart = formatDate(new Date( startDate ), 1);
     const templateEnd = formatDate(new Date( endDate ), 1);
     const today = formatTime( new Date() );
-    let totalSales = 0, totalQuantity = 0;
+    let totalSales = 0, totalProfit = 0, totalQuantity = 0;
     const productsDetails = details.map( (detail, index) => {
         detail.index = index + 1;
         totalQuantity += detail.quantitySum;
+        totalProfit += detail.profitSum;
         totalSales += detail.saleSum;
         return detail;
     });
 
-    const pdf = await createPdf({ template: 'productSaleTemplate', data: { productsDetails, start: templateStart, end: templateEnd, today, totalQuantity, totalSales, } });
+    const pdf = await createPdf({ template: 'productSaleTemplate', data: { productsDetails, start: templateStart, end: templateEnd, today, totalQuantity, totalSales, totalProfit } });
 
     res.contentType('application/pdf');
     return res.status(200).send(pdf);

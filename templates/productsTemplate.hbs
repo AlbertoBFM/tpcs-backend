@@ -19,12 +19,11 @@
                 <tr>
                     <th>Nº</th>
                     <th>Producto</th>
-                    {{!-- <th>Descripción</th> --}}
                     <th>Categoría</th>
                     <th>Proveedor</th>
                     <th>Stock</th>
-                    <th>Precio de Compra</th>
-                    <th>Precio de Venta</th>
+                    <th>Precio de Compra(bs.)</th>
+                    <th>Precio de Venta(bs.)</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,12 +31,11 @@
                     <tr class={{#unless product.stock }}"bg-danger p-2 text-dark bg-opacity-25"{{/unless}}>
                         <td>{{product.index}}</td>
                         <td>{{product.name}}</td>
-                        {{!-- <td>{{product.description}}</td> --}}
                         <td>{{product.category.name}}</td> 
                         <td>{{product.provider.name}}</td>
                         <td>{{product.stock}}</td>
-                        <td>{{product.purchasePrice}} bs.</td> 
-                        <td>{{product.salePrice}} bs.</td> 
+                        <td>{{product.purchasePrice}}</td> 
+                        <td>{{product.salePrice}}</td> 
                     </tr>
                 {{/each}}
             </tbody>

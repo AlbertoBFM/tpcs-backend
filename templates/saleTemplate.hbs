@@ -25,7 +25,8 @@
                     <th>User</th>
                     <th>Cliente</th>
                     <th>Fecha</th>
-                    <th>Subtotal</th>
+                    <th>Subtotal Venta(bs.)</th>
+                    <th>Ganancia(bs.)</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,7 +41,8 @@
                             <td>Sin Datos</td>
                         {{/if}}
                         <td>{{sale.date}}</td> 
-                        <td>{{sale.total}} bs.</td>
+                        <td>{{sale.total}}</td>
+                        <td>{{sale.profit}}</td>
                     </tr>
                 {{/each}}
             </tbody>
@@ -48,7 +50,8 @@
                 <tr>
                     <td colspan="3" class="bg-white border-white">&nbsp;</td>
                     <td class="table-dark"><b>Total</b></td>
-                    <td class="table-dark"><b>{{totalSum}} bs.</b></td>
+                    <td class="table-dark"><b>{{totalSum}}</b></td>
+                    <td class="table-dark"><b>{{totalProfit}}</b></td>
                 </tr>
             </tfoot>
         </table>
