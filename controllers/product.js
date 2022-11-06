@@ -6,7 +6,7 @@ const SaleDetail = require('../models/SaleDetail');
 
 const getAllProducts = async ( req, res = response ) => {
     try {
-        const products = await Product.find().select('name')
+        const products = await Product.find().select('name stock purchasePrice')
                                         .populate( 'category', 'name' )
                                         .populate( 'provider', 'name' );
         return res.status( 200 ).json({
