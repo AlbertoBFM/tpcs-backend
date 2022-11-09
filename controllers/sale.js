@@ -1,5 +1,5 @@
 const { response } = require('express');
-const { formatDateToQuery, formatTime, formatDate } = require('../helpers/formatDate');
+const { formatDateToQuery, formatTime, formatDate, formatDateByMonths, formatDateByDay } = require('../helpers/formatDate');
 const Product = require('../models/Product');
 const Sale = require('../models/Sale');
 const User = require('../models/User');
@@ -173,10 +173,50 @@ const deleteSale = async ( req, res = response ) => {
 
 }
 
+const getSalesChart = async ( req, res = response ) => {
+    try {
+        const { start, end, days, monthName } = formatDateByMonths();
+
+        const sales = await Sale.find({ date: { $gte: start, $lt: end } }).lean().populate( 'user', 'name' ).sort({ date: 1 });        
+        const daysArray = Array.from({ length: days }, (_, index) => index + 1);
+
+        const filteredSales = daysArray.map( day => {
+            const amountSales = sales.filter( sale => {
+                const date = new Date(sale.date);
+                const { startOfDay, endOfDay } = formatDateByDay( day, new Date(start) );
+
+                return date >= new Date(startOfDay) && date < new Date(endOfDay);
+            });
+
+            return amountSales.length;
+        });
+
+        return res.status(200).json({
+            ok: true,
+            labels: daysArray,
+            datasets: [
+                {
+                    label: `Ventas de ${ monthName }`,
+                    backgroundColor: 'rgb(13, 110, 253)',
+                    borderColor: 'rgb(13, 110, 253)',
+                    data: filteredSales
+                }
+            ]
+        });
+    } catch (error) {
+        console.log({error});
+        return res.status(500).json({
+            ok: true,
+            msg: 'Error al Obtener los datos para el gráfico'
+        });
+    }
+}
+
 module.exports = {
     getAllSales,
     getSales,
     validateProductStock,
     createSale,
-    deleteSale
+    deleteSale,
+    getSalesChart
 }
