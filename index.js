@@ -31,7 +31,7 @@ app.use( '/api/report', require('./routes/report') );
 app.use( '/api/user', require('./routes/user') );
 
 app.get( '*', ( req, res ) => {
-    res.sendFile( __dirname + '/public' );
+    res.sendFile( __dirname + '/public/index.html' );
 });
 // // Public directory
 // app.use( express.static('public') );
