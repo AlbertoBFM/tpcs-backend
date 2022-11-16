@@ -1,0 +1,16 @@
+FROM node:18.12.1
+
+WORKDIR /app
+
+COPY package.json ./
+
+RUN yarn install
+
+COPY . .
+
+ENV DB_CNN=mongodb+srv://mern_user:W74IkIKg5gWM7TfZ@tpcs.yssqijp.mongodb.net/tpcs
+ENV SECRET_JWT_SEED=@1b3rt!
+
+EXPOSE 4000
+
+CMD ["yarn", "docker-build-webapp"]
