@@ -15,6 +15,7 @@ const createPdf = async ({ template, data }) => {
         headless: true,
         args: ['--no-sandbox'],
     });
+    
     const page = await browser.newPage();
 
     const content = await compile( template, data );
