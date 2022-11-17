@@ -11,11 +11,9 @@ const compile = async (templateName, data) => {
 };
 //* Create pdf
 const createPdf = async ({ template, data }) => {
-    const browser = await puppeteer.launch( {
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-        ],
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox'],
     });
     const page = await browser.newPage();
 
